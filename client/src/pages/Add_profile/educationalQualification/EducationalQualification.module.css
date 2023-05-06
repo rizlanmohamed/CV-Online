@@ -3,3 +3,14 @@
     width: 60%;
     padding-top: 100px;
  }
+
+ .subject_colum{
+    display: flex;
+ }
+
+ .add_gce_button{
+   display: flex;
+   justify-content: center;
+   margin: 20px;
+ }
+

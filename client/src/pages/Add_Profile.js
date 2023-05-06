@@ -34,6 +34,11 @@ function Add_Profile() {
     setCurrentSteps(prev => prev + 1)
   }
 
+  const handlePrevious = () => {
+    console.log("profileReducer", profileReducer.personalInformation)
+    setCurrentSteps(prev => prev >= 1 ? prev - 1 : prev)
+  }
+
   return (
     <>
     {contextHolder}
@@ -88,7 +93,7 @@ function Add_Profile() {
 
         <Row>
           <Col md={22}>
-            <Button type="default" disabled={false}>Previous</Button>
+            <Button type="default" onClick={handlePrevious} disabled={false}>Previous</Button>
           </Col>
           <Col md={2}>
             <Button type="primary" onClick={handleNext} disabled={handleNextDisable()}>Next</Button>
