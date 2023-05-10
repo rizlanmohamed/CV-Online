@@ -48,6 +48,12 @@ const CollectionCreateForm = ({
     });
 
     JSON.stringify(updateData) !== "{}" && setUpdate(true);
+    
+    if(updateData.degree === 'gce'){
+      setEducationType('gce')
+    } else{
+      setEducationType('higher')
+    }
   }, [updateData]);
 
   const [form] = Form.useForm();
@@ -72,9 +78,10 @@ const CollectionCreateForm = ({
         form
           .validateFields()
           .then((values) => {
+            console.log('values,' , values)
+            update ? onUpdate(values) : onCreate(values);
             setUpdate(false);
             form.resetFields();
-            update ? onUpdate(values) : onCreate(values);
           })
           .catch((info) => {
             console.log("Validate Failed:", info);
@@ -86,7 +93,7 @@ const CollectionCreateForm = ({
           span: 6,
         }}
         form={form}
-        onFinish={update ? onUpdate : onCreate}
+        // onFinish={update ? onUpdate : onCreate}
       >
         <Form.Item
           label="School/ Collage"
@@ -302,16 +309,16 @@ const EducationalQualification = () => {
   };
 
   const onUpdate = (values) => {
-    const updatedValues = gceQualification.map((data) => {
+   let changedValues = gceQualification.map((data) => {
       if (data.id === updateData.id) {
-        let updatedData = { ...data, ...values };
-        return updatedData;
+        let updatedData = {...data, ...values}
+        return updatedData
       } else {
-        return gceQualification;
+        return data;
       }
-    });
+    })
 
-    setGceQualification(updatedValues);
+    setGceQualification(changedValues);
     setOpen(false);
   };
 
@@ -338,10 +345,9 @@ const EducationalQualification = () => {
       </div>
     );
   };
-
+console.log('gceQualification', gceQualification)
   return (
     <>
-      <Alert showIcon={false} message="Higher Qualification (GCE)" banner />
       <div>
         <div className={Styles.add_gce_button}>
           <Button
@@ -396,6 +402,7 @@ const EducationalQualification = () => {
                 </Card> */}
 
                 <Card
+                key={i}
                   title={
                     gce.degree === "gce"
                       ? gce.examType
@@ -410,14 +417,14 @@ const EducationalQualification = () => {
                 >
                   <h4>{gce.school}</h4>
                   <h4>
-                    {gce.startDate.format("YYYY-MM")} -{" "}
-                    {gce.endDate.format("YYYY-MM")}
+                    {gce.startDate?.format("YYYY-MM")} -{" "}
+                    {gce.endDate?.format("YYYY-MM")}
                   </h4>
                   <h4>
                     Grade:{" "}
                     {gce.grade
                       ? gce.grade
-                      : gce.subjects.map((sub, i) => {
+                      : gce.subjects?.map((sub, i) => {
                           return (
                             <li key={i}>
                               {sub.subject} : {sub.grade}
@@ -433,7 +440,7 @@ const EducationalQualification = () => {
         </Row>
       ) : (
         <p>No Education added</p>
-      )}
+      )} 
     </>
   );
 };

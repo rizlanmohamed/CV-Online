@@ -2,8 +2,10 @@ import { Row, Col, Card, Steps, Button, notification  } from "antd";
 import BgProfile from "../assets/images/bg-profile.jpg";
 import PersonalInformation from "./Add_profile/personalInformation/PersonalInformation";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EducationalQualification from "./Add_profile/educationalQualification/EducationalQualification";
+import JobExperience from "./Add_profile/jobExperience/JobExperience";
+import { getUserAccount } from "../services/services";
 
 function Add_Profile() {
 
@@ -19,6 +21,12 @@ function Add_Profile() {
   //     placement,
   //   });
   // };
+
+  useEffect(() => {
+    getUserAccount()
+    .then(res => console.log(res.data))
+    .then(err => console.log(err))
+  }, [])
 
 
   const handleNextDisable = () => {
@@ -77,16 +85,12 @@ function Add_Profile() {
                   title: "Job",
                   description: "Experience",
                 },
-                {
-                  title: "Project",
-                  description: "Experience",
-                },
               ]}
             />
             {/* ------------------------------------------------------------ */}
 
             <>
-              {currentSteps === 0 ? <PersonalInformation /> : currentSteps === 1 ? <EducationalQualification /> : null}
+              {currentSteps === 0 ? <PersonalInformation /> : currentSteps === 1 ? <EducationalQualification /> : currentSteps === 2 ? <JobExperience /> : null}
             </>
           </Col>
         </Row>

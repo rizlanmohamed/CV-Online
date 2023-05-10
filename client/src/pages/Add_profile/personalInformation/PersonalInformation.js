@@ -178,7 +178,7 @@ const PersonalInformation = () => {
             >
               <Form.Item
                 label="First name"
-                name="firstname"
+                name="firstName"
                 rules={[
                   {
                     required: true,
