@@ -12,16 +12,14 @@ import {
   Typography,
   Tag,
   theme,
-  Empty
+  Empty,
+  Space,
 } from "antd";
 
-import {
-  PlusOutlined,
-  PlusCircleOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
-import Styles from "./JobExperience.module.css";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { experienceInfoFunc } from "../../../redux/profileSlice";
 
 const CollectionCreateForm = ({
   open,
@@ -34,13 +32,14 @@ const CollectionCreateForm = ({
 
   const { TextArea } = Input;
 
+  const { experienceInformation } = useSelector((state) => state.profile);
+  console.log("experienceInformation ", experienceInformation);
+
   // useEffect(() => {
   //   form.resetFields();
   //   form.setFieldsValue({
   //     ...updateData,
   //   });
-
-    
 
   //   JSON.stringify(updateData) !== "{}" && setUpdate(true);
   // }, [updateData]);
@@ -49,7 +48,7 @@ const CollectionCreateForm = ({
   const inputRef = useRef(null);
 
   const { token } = theme.useToken();
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(["Skills 1", "Skills 2"]);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -59,9 +58,9 @@ const CollectionCreateForm = ({
       ...updateData,
     });
 
-    setTags(updateData?.skills)
+    setTags(updateData?.skills);
 
-    JSON.stringify(updateData) !== "  18{}" && setUpdate(true);
+    JSON.stringify(updateData) !== "{}" && setUpdate(true);
   }, [updateData]);
 
   useEffect(() => {
@@ -84,7 +83,7 @@ const CollectionCreateForm = ({
   const handleInputConfirm = () => {
     if (inputValue && tags.indexOf(inputValue) === -1) {
       setTags([...tags, inputValue]);
-      form.setFieldValue('skills', tags);
+      form.setFieldValue("skills", tags);
     }
     setInputVisible(false);
     setInputValue("");
@@ -120,8 +119,7 @@ const CollectionCreateForm = ({
   };
 
   const onFinish = (value) => {
-    console.log("onFinish" ,[value]);
-    
+    console.log("onFinish", [value]);
   };
 
   return (
@@ -140,7 +138,7 @@ const CollectionCreateForm = ({
         form
           .validateFields()
           .then((values) => {
-            let valWithSkills = {...values, skills: tags}
+            let valWithSkills = { ...values, skills: tags };
             console.log("modded,", valWithSkills);
             update ? onUpdate(valWithSkills) : onCreate(valWithSkills);
             setUpdate(false);
@@ -173,7 +171,7 @@ const CollectionCreateForm = ({
 
         <Form.Item
           label="Employment type"
-          name="EmploymentType"
+          name="employmentType"
           rules={[
             {
               required: true,
@@ -191,7 +189,7 @@ const CollectionCreateForm = ({
 
         <Form.Item
           label="Company Name"
-          name="CompanyName"
+          name="companyName"
           rules={[
             {
               required: true,
@@ -202,11 +200,9 @@ const CollectionCreateForm = ({
           <Input placeholder="Virtusa" />
         </Form.Item>
 
-        <Form.Item label="Skills" name="skills" >
+        <Form.Item label="Skills" name="skills">
           <>
-
-              {tagChild}
-   
+            {tagChild}
 
             {inputVisible ? (
               <Input
@@ -291,6 +287,12 @@ const JobExperience = () => {
   const [experience, setExperience] = useState([]);
   const [updateData, setUpdateData] = useState({});
 
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(experienceInfoFunc(experience));
+  }, [experience]);
+
   const { Link } = Typography;
 
   const onCreate = (values) => {
@@ -341,34 +343,26 @@ const JobExperience = () => {
   return (
     <>
       <div>
-        {/* <div className={Styles.add_gce_button}>
+        <Empty
+          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+          imageStyle={{
+            height: 60,
+          }}
+          description={
+            <span>
+              Add <a href="#API">relevant experience</a>
+            </span>
+          }
+        >
           <Button
-            type="dashed"
+            type="primary"
             onClick={() => {
               setOpen(true);
             }}
-            style={{ fontSize: 20 }}
           >
-            <PlusCircleOutlined />
             Add Experience
           </Button>
-        </div> */}
-
-        <Empty
-    image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-    imageStyle={{
-      height: 60,
-    }}
-    description={
-      <span>
-        Add  <a href="#API">relevant experience</a>
-      </span>
-    }
-  >
-    <Button type="primary" onClick={() => {
-              setOpen(true);
-            }}>Add Experience</Button>
-  </Empty>
+        </Empty>
 
         <CollectionCreateForm
           open={open}
@@ -386,23 +380,25 @@ const JobExperience = () => {
           {experience.map((gce, i) => {
             return (
               <Col span={8}>
-                <Card
-                  key={i}
-                  title={gce.title + " at " + gce.CompanyName}
-                  extra={
-                    <Popover content={content(gce)} title="Action">
-                      <Link>Action</Link>
-                    </Popover>
-                  }
-                >
-                  <h4>{gce.EmploymentType + " - " + gce.location}</h4>
-                  <h4>
-                    {gce.startDate?.format("YYYY-MM")} -{" "}
-                    {gce.endDate?.format("YYYY-MM")}
-                  </h4>
-                  <h5>{gce.skills?.map((skill) => skill + ", ")}</h5>
-                  <p>{gce.description}</p>
-                </Card>
+                <Space>
+                  <Card
+                    key={i}
+                    title={gce.title + " at " + gce.companyName}
+                    extra={
+                      <Popover content={content(gce)} title="Action">
+                        <Link>Action</Link>
+                      </Popover>
+                    }
+                  >
+                    <h4>{gce.employmentType + " - " + gce.location}</h4>
+                    <h4>
+                      {gce.startDate?.format("YYYY-MM")} -{" "}
+                      {gce.endDate?.format("YYYY-MM")}
+                    </h4>
+                    <h5>{gce.skills?.map((skill) => skill + ", ")}</h5>
+                    <p>{gce.description}</p>
+                  </Card>
+                </Space>
               </Col>
             );
           })}

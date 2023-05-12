@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/sign-in",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "js-cookie": "^3.0.5",
     "moment": "^2.29.4"
   }
 }

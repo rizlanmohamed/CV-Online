@@ -1,33 +1,29 @@
 import {
-  Alert,
   Button,
-  Cascader,
-  Checkbox,
   DatePicker,
   Form,
   Input,
-  InputNumber,
-  Radio,
   Select,
   Space,
   Modal,
   Slider,
-  Steps,
   Card,
   Row,
   Col,
   Popover,
   Typography,
+  Empty,
 } from "antd";
 
 import {
   MinusCircleOutlined,
   PlusOutlined,
-  PlusCircleOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
 import Styles from "./EducationalQualification.module.css";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addEducationInfoFunc } from "../../../redux/profileSlice";
 
 const CollectionCreateForm = ({
   open,
@@ -41,6 +37,9 @@ const CollectionCreateForm = ({
 
   const { TextArea } = Input;
 
+  const { educationInformation } = useSelector((state) => state.profile);
+  console.log("Edu info from redux", educationInformation);
+
   useEffect(() => {
     form.resetFields();
     form.setFieldsValue({
@@ -48,25 +47,24 @@ const CollectionCreateForm = ({
     });
 
     JSON.stringify(updateData) !== "{}" && setUpdate(true);
-    
-    if(updateData.degree === 'gce'){
-      setEducationType('gce')
-    } else{
-      setEducationType('higher')
+
+    if (updateData.degree === "gce") {
+      setEducationType("gce");
+    } else {
+      setEducationType("higher");
     }
   }, [updateData]);
 
   const [form] = Form.useForm();
 
   const handleEducationSelect = (value) => {
-    // form.resetFields();
     setEducationType(value);
   };
 
   return (
     <Modal
       open={open}
-      title={(update ? "Update " : "Create") + " the Qualification"}
+      title={(update ? "Update " : "Create") + " the Education"}
       okText={update ? "Update" : "Create"}
       cancelText="Cancel"
       onCancel={() => {
@@ -78,7 +76,7 @@ const CollectionCreateForm = ({
         form
           .validateFields()
           .then((values) => {
-            console.log('values,' , values)
+            console.log("values,", values);
             update ? onUpdate(values) : onCreate(values);
             setUpdate(false);
             form.resetFields();
@@ -109,12 +107,12 @@ const CollectionCreateForm = ({
         </Form.Item>
 
         <Form.Item
-          label="Degree"
+          label="Degree / Studies"
           name="degree"
           rules={[
             {
               required: true,
-              message: "Missing degree",
+              message: "Missing degree or studies",
             },
           ]}
         >
@@ -122,7 +120,7 @@ const CollectionCreateForm = ({
             <Select.Option value="Doctorate">Doctorate</Select.Option>
             <Select.Option value="Masters">Masters</Select.Option>
             <Select.Option value="Bachelors">Bachelors</Select.Option>
-            <Select.Option value="Advanced_Diploma">
+            <Select.Option value="Advanced Diploma">
               Advanced Diploma
             </Select.Option>
             <Select.Option value="Diploma">Diploma</Select.Option>
@@ -286,7 +284,6 @@ const CollectionCreateForm = ({
             },
           ]}
         >
-          {/* <DatePicker style={{ width: "100%" }} /> */}
           <TextArea rows={4} />
         </Form.Item>
       </Form>
@@ -299,7 +296,13 @@ const EducationalQualification = () => {
   const [gceQualification, setGceQualification] = useState([]);
   const [updateData, setUpdateData] = useState({});
 
+  const dispatch = useDispatch();
+
   const { Link } = Typography;
+
+  useEffect(() => {
+    dispatch(addEducationInfoFunc(gceQualification));
+  }, [gceQualification]);
 
   const onCreate = (values) => {
     console.log("Received values of form: ", values);
@@ -309,14 +312,14 @@ const EducationalQualification = () => {
   };
 
   const onUpdate = (values) => {
-   let changedValues = gceQualification.map((data) => {
+    let changedValues = gceQualification.map((data) => {
       if (data.id === updateData.id) {
-        let updatedData = {...data, ...values}
-        return updatedData
+        let updatedData = { ...data, ...values };
+        return updatedData;
       } else {
         return data;
       }
-    })
+    });
 
     setGceQualification(changedValues);
     setOpen(false);
@@ -345,22 +348,30 @@ const EducationalQualification = () => {
       </div>
     );
   };
-console.log('gceQualification', gceQualification)
+  //console.log('gceQualification', gceQualification)
   return (
     <>
       <div>
-        <div className={Styles.add_gce_button}>
+        <Empty
+          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+          imageStyle={{
+            height: 60,
+          }}
+          description={
+            <span>
+              Add <a href="#API">relevant education</a>
+            </span>
+          }
+        >
           <Button
-            type="dashed"
+            type="primary"
             onClick={() => {
               setOpen(true);
             }}
-            style={{ fontSize: 20 }}
           >
-            <PlusCircleOutlined />
             Add Education
           </Button>
-        </div>
+        </Empty>
 
         <CollectionCreateForm
           open={open}
@@ -378,69 +389,49 @@ console.log('gceQualification', gceQualification)
           {gceQualification.map((gce, i) => {
             return (
               <Col span={8}>
-                {/* <Card
-                  title={gce.examType}
-                  bordered
-                  extra={
-                    <Popover content={content(gce)} title="Action">
-                      <Link>Action</Link>
-                    </Popover>
-                  }
-                >
-                  {gce.examType +
-                    ", Place " +
-                    gce.examPlace +
-                    ", Written date " +
-                    gce.passedYear.format("YYYY-MM-DD")}
-                  {gce.subjects.map((sub, i) => {
-                    return (
-                      <li key={i}>
-                        {sub.subject} : {sub.grade}
-                      </li>
-                    );
-                  })}
-                </Card> */}
-
-                <Card
-                key={i}
-                  title={
-                    gce.degree === "gce"
-                      ? gce.examType
-                      : gce.degree + " in " + (gce.fieldOfStudy ?
-                        gce.fieldOfStudy : null)
-                  }
-                  extra={
-                    <Popover content={content(gce)} title="Action">
-                      <Link>Action</Link>
-                    </Popover>
-                  }
-                >
-                  <h4>{gce.school}</h4>
-                  <h4>
-                    {gce.startDate?.format("YYYY-MM")} -{" "}
-                    {gce.endDate?.format("YYYY-MM")}
-                  </h4>
-                  <h4>
-                    Grade:{" "}
-                    {gce.grade
-                      ? gce.grade
-                      : gce.subjects?.map((sub, i) => {
-                          return (
-                            <li key={i}>
-                              {sub.subject} : {sub.grade}
-                            </li>
-                          );
-                        })}
-                  </h4>
-                  <p>{gce.description}</p>
-                </Card>
+                <Space>
+                  <Card
+                    key={i}
+                    title={
+                      gce.degree === "gce"
+                        ? gce.examType
+                        : gce.degree +
+                          " in " +
+                          (gce.fieldOfStudy ? gce.fieldOfStudy : null)
+                    }
+                    extra={
+                      <Popover content={content(gce)} title="Action">
+                        <Link>Action</Link>
+                      </Popover>
+                    }
+                  >
+                    <h4>{gce.school}</h4>
+                    <h4>
+                      {gce.startDate?.format("YYYY-MM")} -{" "}
+                      {gce.endDate?.format("YYYY-MM")}
+                    </h4>
+                    <h4>
+                      Grade:{" "}
+                      {gce.grade
+                        ? gce.grade
+                        : gce.subjects?.map((sub, i) => {
+                            return (
+                              <li key={i}>
+                                {sub.subject} : {sub.grade}
+                              </li>
+                            );
+                          })}
+                    </h4>
+                    <p>{gce.description}</p>
+                  </Card>
+                </Space>
               </Col>
             );
           })}
         </Row>
       ) : (
         <p>No Education added</p>
-      )} 
+      )}
     </>
   );
 };

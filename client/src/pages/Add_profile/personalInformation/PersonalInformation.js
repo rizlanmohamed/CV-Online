@@ -11,7 +11,7 @@ import {
   InputNumber,
 } from "antd";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import styles from "./PersonalInformation.module.css"; // Import css modules stylesheet as styles
 import { addPersonalInfoFunc } from "../../../redux/profileSlice";
 
@@ -24,7 +24,6 @@ const getBase64 = (file) =>
   });
 
 const PersonalInformation = () => {
-  
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
@@ -66,7 +65,6 @@ const PersonalInformation = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-
     if (inputVisible) {
       inputRef.current?.focus();
     }
@@ -120,7 +118,7 @@ const PersonalInformation = () => {
 
   const onFinish = (value) => {
     console.log([value]);
-    dispatch(addPersonalInfoFunc([value]))
+    dispatch(addPersonalInfoFunc([value]));
   };
 
   return (
@@ -170,10 +168,10 @@ const PersonalInformation = () => {
               }}
               fields={[
                 {
-                    name: ["skills"],
-                    value: tags,
+                  name: ["skills"],
+                  value: tags,
                 },
-                ]}
+              ]}
               onFinish={onFinish}
             >
               <Form.Item
@@ -232,8 +230,17 @@ const PersonalInformation = () => {
               >
                 <Input />
               </Form.Item>
-              <Form.Item label="Total Experience" name="totalExperience">
-                <Select defaultValue="1 - 2 Years">
+              <Form.Item
+                label="Total Experience"
+                name="totalExperience"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select your Total Years Experience",
+                  },
+                ]}
+              >
+                <Select>
                   <Select.Option value="Non or less than a year">
                     Non or less than a year
                   </Select.Option>
@@ -241,14 +248,21 @@ const PersonalInformation = () => {
                   <Select.Option value="2 - 4 Years">2 - 4 Years</Select.Option>
                   <Select.Option value="4 - 6 Years">4 - 6 Years</Select.Option>
                   <Select.Option value="6 - 8 Years">6 - 8 Years</Select.Option>
-                  <Select.Option value="8 - 10 Years">8 - 10 Years</Select.Option>
+                  <Select.Option value="8 - 10 Years">
+                    8 - 10 Years
+                  </Select.Option>
                   <Select.Option value="More than 10 Years">
                     More than 10 Years
                   </Select.Option>
                 </Select>
               </Form.Item>
-              <Form.Item label="Higher education" name="higherEducation">
-                <Select defaultValue="Diploma">
+              <Form.Item label="Higher education" name="higherEducation" rules={[
+                  {
+                    required: true,
+                    message: "Please select your Higher Education",
+                  },
+                ]}>
+                <Select>
                   <Select.Option value="Doctorate">Doctorate</Select.Option>
                   <Select.Option value="Masters">Masters</Select.Option>
                   <Select.Option value="Bachelors">Bachelors</Select.Option>
@@ -259,6 +273,18 @@ const PersonalInformation = () => {
                   <Select.Option value="GCE A/L">GCE A/L</Select.Option>
                   <Select.Option value="GCE O/L">GCE O/L</Select.Option>
                 </Select>
+              </Form.Item>
+              <Form.Item
+                label="Location"
+                name="location"
+                rules={[
+                  {
+                    required: true,
+                    message: "Last name is mandatory to submit the details",
+                  },
+                ]}
+              >
+                <Input />
               </Form.Item>
               <Form.Item
                 label="About"

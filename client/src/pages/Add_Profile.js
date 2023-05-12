@@ -1,4 +1,4 @@
-import { Row, Col, Card, Steps, Button, notification  } from "antd";
+import { Row, Col, Card, Steps, Button, notification } from "antd";
 import BgProfile from "../assets/images/bg-profile.jpg";
 import PersonalInformation from "./Add_profile/personalInformation/PersonalInformation";
 import { useSelector } from "react-redux";
@@ -6,50 +6,60 @@ import { useEffect, useState } from "react";
 import EducationalQualification from "./Add_profile/educationalQualification/EducationalQualification";
 import JobExperience from "./Add_profile/jobExperience/JobExperience";
 import { getUserAccount } from "../services/services";
+import ReviewPage from "./Add_profile/reviewPage/ReviewPage";
 
 function Add_Profile() {
-
   const [currentSteps, setCurrentSteps] = useState(0);
   const [api, contextHolder] = notification.useNotification();
-  const profileReducer = useSelector(state => state.profile)
-
-  // const openNotification = (placement) => {
-  //   api.error({
-  //     message: `Notification ${placement}`,
-  //     description:
-  //       'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
-  //     placement,
-  //   });
-  // };
+  const profileReducer = useSelector((state) => state.profile);
 
   useEffect(() => {
     getUserAccount()
-    .then(res => console.log(res.data))
-    .then(err => console.log(err))
-  }, [])
-
+      .then((res) => console.log(res.data))
+      .then((err) => console.log(err));
+  }, []);
 
   const handleNextDisable = () => {
-    if(currentSteps === 0 && profileReducer.personalInformation.length === 0){
-      return true
+    if (currentSteps === 0 && profileReducer.personalInformation.length === 0) {
+      return true;
+    } else if (
+      currentSteps === 1 &&
+      profileReducer.educationInformation.length === 0
+    ) {
+      return true;
+    } else if (
+      currentSteps === 2 &&
+      profileReducer.experienceInformation.length === 0
+    ) {
+      return true;
+    } else if (currentSteps === 3) {
+      return true;
     } else {
-      return false
+      return false;
     }
-  }
+  };
+
+  const handlePreviousDisable = () => {
+    if (currentSteps === 0 || currentSteps === 3) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const handleNext = () => {
-    console.log("profileReducer", profileReducer.personalInformation)
-    setCurrentSteps(prev => prev + 1)
-  }
+    console.log("profileReducer", profileReducer.personalInformation);
+    setCurrentSteps((prev) => prev + 1);
+  };
 
   const handlePrevious = () => {
-    console.log("profileReducer", profileReducer.personalInformation)
-    setCurrentSteps(prev => prev >= 1 ? prev - 1 : prev)
-  }
+    console.log("profileReducer", profileReducer.personalInformation);
+    setCurrentSteps((prev) => (prev >= 1 ? prev - 1 : prev));
+  };
 
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <div
         className="profile-nav-bg pb-12"
         style={{ backgroundImage: "url(" + BgProfile + ")" }}
@@ -85,22 +95,42 @@ function Add_Profile() {
                   title: "Job",
                   description: "Experience",
                 },
+                {
+                  title: "Review",
+                  description: "Application",
+                },
               ]}
             />
             {/* ------------------------------------------------------------ */}
 
             <>
-              {currentSteps === 0 ? <PersonalInformation /> : currentSteps === 1 ? <EducationalQualification /> : currentSteps === 2 ? <JobExperience /> : null}
+              {currentSteps === 0 ? (
+                <PersonalInformation />
+              ) : currentSteps === 1 ? (
+                <EducationalQualification />
+              ) : currentSteps === 2 ? (
+                <JobExperience />
+              ) : currentSteps === 3 ? (
+                <ReviewPage />
+              ) : null}
             </>
           </Col>
         </Row>
 
         <Row>
           <Col md={22}>
-            <Button type="default" onClick={handlePrevious} disabled={false}>Previous</Button>
+            <Button type="default" onClick={handlePrevious} disabled={handlePreviousDisable()}>
+              Previous
+            </Button>
           </Col>
           <Col md={2}>
-            <Button type="primary" onClick={handleNext} disabled={handleNextDisable()}>Next</Button>
+            <Button
+              type="primary"
+              onClick={handleNext}
+              disabled={handleNextDisable()}
+            >
+              Next
+            </Button>
           </Col>
         </Row>
       </Card>
